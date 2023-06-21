@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>Elixir: une potion pour construire vos microservices dans un monolithe</title>
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/night.css" />
+    <link rel="stylesheet" href="plugin/highlight/monokai.css" />
+    <link rel="stylesheet" href="dist/custom.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <header style="position: absolute;top: 50px; left: 100px; z-index:500; font-size:100px;background-color: rgba(0,0,0,0.5)"></header>
+      <div class="slides">
+        <section data-external="sections/0-history.html"></section>
+        <section data-external="sections/1-introduction.html"></section>
+        <section data-external="sections/2-a-functional-core.html"></section>
+        <section data-external="sections/3-process-all-the-way.html"></section>
+        <section data-external="sections/4-applications.html"></section>
+        <section data-external="sections/5-conclusion.html"></section>
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="plugin/markdown/markdown.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script>
+      Reveal.initialize({
+        disableLayout: false,
+        width: "90%",
+        height: "100%",
+        margin: 0,
+        minScale: 1,
+        maxScale: 1,
+        navigationMode: "linear",
+        controls: false,
+        hash: true,
+        slideNumber: false,
+        autoPlayMedia: true,
+        transition: "none",
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+        keyboard: {},
+        dependencies: [
+          { 
+            src: 'node_modules/reveal_external/external/external.js', 
+            condition: function() { 
+                return !!document.querySelector( '[data-external],[data-external-replace]' ); 
+            } 
+          }
+        ]
+      });
+    </script>
+  </body>
+</html>

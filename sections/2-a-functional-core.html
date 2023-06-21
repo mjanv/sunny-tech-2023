@@ -1,0 +1,300 @@
+<section data-background-image="images/12.png">
+    <h1 style="
+        font-size: 4em; 
+        color: white; 
+        text-shadow: 
+            10px 10px 2px black,
+            15px 15px 2px yellow,
+            20px 20px 2px black,
+            25px 25px 20px yellow,
+            30px 30px 20px black
+        ;
+        ">Your core is functional</h1>
+</section>
+
+<section data-background-image="images/pink.png">
+    <h2 class="fragment" style="font-size: 2.5em; color: white; text-shadow: 5px 5px 2px black;">Functional, dynamically typed</h2>
+    <br>
+    <h2 class="fragment" style="font-size: 2.5em; color: white; text-shadow: 5px 5px 2px black;">Data is immutable</h2>
+    <br>
+    <h2 class="fragment" style="font-size: 2.5em; color: white; text-shadow: 5px 5px 2px black;">Functions are pure</h2>
+</section>
+
+<section data-background-image="images/pink.png">
+    <h2 style="font-size: 3em; color: white; text-shadow: 5px 5px 2px black;">Basic types</h2>
+    <pre class="elixir fragment">
+        <code style="font-size: 60px;" data-trim data-noescape data-line-numbers="1-2|3|4-5|6|7-9|10|11">
+        1                   # Integers
+        1.4                 # Floats
+        nil                 # Null value
+        true                # Booleans
+        false               #
+        :symbol             # Atoms (💜)
+        {1, 2, 3}           # Tuples
+        [1, 2, 3]           # Lists
+        %{a: 1, b: 2, c: 3} # Maps
+        "string"            # Strings
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/pink.png"">
+    <h2 style="font-size: 3em; color: white; text-shadow: 5px 5px 2px black;">Modules</h2>
+    <pre class="elixir fragment">
+        <code style="font-size: 100px;" data-trim data-noescape data-line-numbers>
+        defmodule MyModule do
+        end          
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/pink.png">
+    <h2 style="font-size: 3em; color: white; text-shadow: 5px 5px 2px black;">Objects</h2>
+    <br>
+    <pre class="elixir fragment">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers>
+            defmodule Item do
+                defstruct title: "", price: 0.0
+            end
+        </code>
+    </pre>
+    <br>
+    <pre class="elixir fragment">
+        <code style="font-size: 50px;" data-trim data-noescape  data-line-numbers="1-2|3-4">
+            iex> item = %Item{title: "apple", price: 14}
+            %Item{price: 14, title: "apple"}
+            iex> item.title
+            "apple"
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/pink.png">
+    <h2 style="font-size: 3em; color: white; text-shadow: 5px 5px 2px black;">Hello, world !</h2>
+    <pre class="elixir fragment">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers>
+        defmodule MyModule do
+            def say_hello do
+                IO.puts("Hello!")
+            end
+        end          
+        </code>
+    </pre>
+    <pre class="elixir fragment">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers>
+        iex> MyModule.say_hello
+        Hello!
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/pink.png">
+    <h2 style="font-size: 3em; color: white; text-shadow: 5px 5px 2px black;">Functions</h2>
+    <pre class="elixir fragment">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers="|2-4|6-8|">
+        defmodule Rectangle do
+            def area(a, b) do
+                a * b
+            end
+
+            def area(a) do
+                area(a, a)
+            end
+        end
+        </code>
+    </pre>
+
+    <pre class="elixir fragment">
+        <code data-trim data-noescape>
+            iex> Rectangle.area(3, 4)
+            12
+
+            iex> Rectangle.area(5)
+            25            
+        </code>
+    </pre>
+</section>
+
+<section data-background-video="images/pipe.mp4" data-background-video-loop></section>
+</section>
+
+<section data-background-image="images/pink.png">
+    <h2 style="font-size: 4em; color: white; text-shadow: 5px 5px 2px black;">Pipelines</h2>
+</section>
+
+<section data-background-image="images/pipeline.png">
+</section>
+
+<section data-background-image="images/pink.png">
+    <pre class="elixir">
+        <code style="font-size: 30px;" data-trim data-noescape data-line-numbers="|2-12|14-19">
+        defmodule Maths do
+            def oneliner(n) do
+                Enum.sum(
+                    Enum.map(
+                        Enum.filter(
+                            1..n, 
+                            fn x -> Integer.is_odd(x) end
+                        ), 
+                        fn x -> x * x end
+                    )
+                )
+            end
+
+            def pipeline(n) do
+                1..n
+                |> Enum.filter(fn x -> Integer.is_odd(x) end)
+                |> Enum.map(fn x -> x * x end)
+                |> Enum.sum()
+            end
+        end 
+        </code>
+    </pre>
+    <pre class="elixir fragment">
+        <code data-trim data-noescape>
+            iex> Maths.oneliner(100)
+            338350
+            
+            iex> Maths.pipeline(100)
+            338350    
+        </code>
+    </pre>
+</section>
+
+<section data-background-video="images/21.mp4" data-background-video-loop></section>
+</section>
+
+<section data-background-image="images/pink.png">
+    <h2 style="font-size: 4em; color: white; text-shadow: 5px 5px 2px black;">Pattern Matching</h2>
+</section>
+
+<section data-background-video="images/pattern.mp4" data-background-video-loop></section>
+</section>
+
+<section data-background-image="images/pink.png">
+    <pre class="elixir">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers="|1|1-2|3-6">
+            iex> {:ok, b, c} = {:ok, 2, 3}
+            {:ok, 2, 3}
+            iex> b
+            2
+            iex> c
+            3
+        </code>
+    </pre>
+
+    <pre class="elixir fragment">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers="1|2-3">
+            iex> {:ok, b, c} = {:nope, 2, 3}
+            ** (MatchError) no match of 
+               right hand side value: {:nope, 2, 3}
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/pink.png">
+    <pre class="elixir">
+        <code style="font-size: 70px;" data-trim data-noescape data-line-numbers="1-2|3-6">
+            iex> [head | tail] = [1, 2, 3]
+            [1, 2, 3]
+            iex> head
+            1
+            iex> tail
+            [2, 3]
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/pink.png">
+    <pre class="elixir">
+        <code style="font-size: 50px;" data-trim data-noescape>
+            iex> item = %Item{price: 14, title: "apple"}
+        </code>
+    </pre>
+    <br>
+    <pre class="fragment elixir">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers="1|2|3-4">
+            iex> %Item{price: price, title: "apple"} = item
+            %Item{price: 14, title: "apple"}
+            iex> price
+            14
+        </code>
+    </pre>
+    <br>
+    <pre class="fragment elixir">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers="1|2-3">
+            iex> %Item{price: price, title: "banana"} = item
+            ** (MatchError) no match of right hand 
+               side value: %Item{price: 14, title: "apple"}
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/pink.png">
+    <pre class="elixir">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers="|1,5|2|3|4">
+            case input do
+                %Item{price: price} -> price
+                price when is_integer(price) -> price
+                _ -> 0
+            end
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/pink.png">
+    <pre class="elixir fragment">
+        <code style="font-size: 45px;" data-trim data-noescape data-line-numbers="|2-4|6-8|10-12">
+        defmodule Maths do
+            def sum([]) do
+                0.0
+            end 
+
+            def sum([%Item{price: price} | items]) do
+                price + sum(items)
+            end
+
+            def sum([head | tail]) when is_float(head) do
+                head + sum(tail)
+            end
+        end
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/pink.png">
+    <pre class="fragment elixir">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers="|1-6|8-9">
+            iex> Maths.sum([
+                    %Item{price: 2.1}, 
+                    %Item{price: 3.4}, 
+                    %Item{price: 1.0}
+                ])
+            6.5
+        
+            iex> Maths.sum([1.0, 2.0, 3.0])
+            6.0
+        </code>
+    </pre>
+</section>
+
+<section data-background-video="images/22.mp4" data-background-video-loop></section>
+</section>
+
+<section data-background-image="images/pink.png">
+    <h2 class="fragment" style="text-align: center; font-size: 3em; color: white; text-shadow: 0px 0px 30px yellow;">
+         💜
+    </h2>
+    <br>
+    <h2 class="fragment" style="text-align: center; font-size: 2.5em; color: white; text-shadow: 5px 5px 2px black;">
+        Functional
+    </h2>
+    <br>
+    <h2 class="fragment" style="text-align: center; font-size: 2.5em; color: white; text-shadow: 5px 5px 2px black;">
+        Immutability
+    </h2>
+    <br>
+    <h2 class="fragment" style="text-align: center; font-size: 2.5em; color: white; text-shadow: 5px 5px 2px black;">
+        Structs + Pipelines + Pattern matching
+    </h2>
+</section>

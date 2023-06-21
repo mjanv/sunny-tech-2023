@@ -1,0 +1,64 @@
+.reveal .slides {
+  text-align: left;
+}
+
+.reveal .slide-background-content {
+	opacity: 0.9 !important;
+  backdrop-filter: blur(10px);
+}
+
+.reveal img {
+  margin: 0;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.reveal code {
+  font-size: 30px;
+}
+
+.reveal .slides section.title .grid-wrapper {    
+  box-sizing: border-box;
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "content content"
+    ". credit";
+  grid-template-columns: auto 40%;
+  grid-template-rows: 6vmin 1fr auto;
+  grid-column-gap: 10vmin;
+  height: 100%;
+  padding: 10vmin;
+}
+
+.logo {
+   grid-area: header;
+}
+
+.content {
+  align-self: center;
+  grid-area: content;
+}
+
+.credit {
+  grid-area: credit;
+}
+
+.reveal section p {
+  display: inline-block;
+  font-size: 0.6em;
+  line-height: 1.2em;
+  vertical-align: top;
+}
+
+.reveal footer {
+  margin-top: 50px;
+  padding-top: 10px;
+  border-top: 1px solid silver;
+  text-align: left;
+  font-size: 0.4em;
+}
+
+footer ol {
+  padding-left: 20px;
+}

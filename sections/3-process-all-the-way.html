@@ -1,0 +1,456 @@
+<section data-background-image="images/13.png">
+    <h1 style="
+        font-size: 4em; 
+        color: white; 
+        text-shadow: 
+            10px 10px 2px black,
+            15px 15px 2px yellow,
+            20px 20px 2px black,
+            25px 25px 20px yellow,
+            30px 30px 20px black
+        ;
+        ">Your world is concurrent</h1>
+</section>
+
+<section data-background-image="images/purple.png">
+    <h2 class="fragment" style="font-size: 2.5em; color: white; text-shadow: 5px 5px 2px black;">Data is immutable</h2>
+    <br>
+    <h2 class="fragment" style="font-size: 2.5em; color: white; text-shadow: 5px 5px 2px black;">Everything runs in a process</h2>
+    <br>
+    <h2 class="fragment" style="font-size: 2.5em; color: white; text-shadow: 5px 5px 2px black;">Running a process is cheap</h2>
+    <br>
+    <h2 class="fragment" style="font-size: 2.5em; color: white; text-shadow: 5px 5px 2px black;">Collaborating through messages</h2>
+    <br>
+</section>
+
+<section data-background-image="images/purple.png">
+    <h2 class="fragment" style="font-size: 3em; color: white; text-shadow: 10px 10px 2px black;">How is Elixir running ?</h2>
+    <br>
+    <h2 class="fragment" style="font-size: 1.5em; color: yellow; text-shadow: 5px 5px 2px black;">➡️ 1 Erlang node</h2>
+    <h2 class="fragment" style="font-size: 1.5em; color: yellow; text-shadow: 5px 5px 2px black;">➡️ Erlang Runtime System (ERTS)</h2>
+    <h2 class="fragment" style="font-size: 1.5em; color: yellow; text-shadow: 5px 5px 2px black;">➡️ Bjorn Erlang Abstract Machine (BEAM)</h2>
+    <h2 class="fragment" style="font-size: 1.5em; color: yellow; text-shadow: 5px 5px 2px black;">➡️ One (preemptive) scheduler per CPU core</h2>
+    <h2 class="fragment" style="font-size: 1.5em; color: yellow; text-shadow: 5px 5px 2px black;">➡️ One process linked to one scheduler</h2>
+</section>
+
+<section data-background-video="images/24.mp4" data-background-video-loop>
+</section>
+
+<section data-background-image="images/purple.png">
+    <h2 class="fragment" style="font-size: 3em; color: white; text-shadow: 10px 10px 2px black;">What is a process ?</h2>
+    <br>
+    <br>
+    <h2 class="fragment" style="font-size: 1.7em; color: yellow; text-shadow: 5px 5px 2px black;">A message area ➡️  The mailbox</h2>
+    <h2 class="fragment" style="font-size: 1.7em; color: yellow; text-shadow: 5px 5px 2px black;">A stack & a heap ➡️  The functional core</h2>
+    <h2 class="fragment" style="font-size: 1.7em; color: yellow; text-shadow: 5px 5px 2px black;">A process control block ➡️  The state</h2>
+</section>
+
+<section data-background-color="white" data-background-video="images/process.mp4" data-background-size="contain" data-background-video-loop>
+</section>
+
+<section data-background-image="images/purple.png">
+    <h2 class="fragment" style="font-size: 2em; color: white; text-shadow: 10px 10px 2px black;">Start one process → spawn</h2>
+    <br>
+    <pre class="fragment elixir">
+        <code style="font-size: 45px;"  data-trim data-noescape data-line-numbers="|1|2|3">
+            iex> pid = spawn(fn -> IO.puts("Hi, I am a cell!") end)
+            Hi, I am a cell!
+            #PID<0.141.0>    
+        </code>
+    </pre>
+
+    <pre  class="fragment elixir">
+        <code style="font-size: 45px;" data-trim data-noescape>
+            iex> Process.alive?(pid)                               
+            false   
+        </code>
+    </pre>
+</section>
+
+<section data-background-video="images/alone.mp4" data-background-video-loop>
+</section>
+
+<section data-background-image="images/purple.png">
+    <h2 style="font-size: 2em; color: white; text-shadow: 10px 10px 2px black;">
+        Start an infinite process → receive
+    </h2>
+    
+    <pre class="fragment elixir">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers="|2-10|3,9|4-5|6-8|8">
+            defmodule Cell do
+                def loop(count) do
+                    receive do
+                        :stop -> 
+                            exit(:normal)
+                        message -> 
+                            IO.puts("#{n}: #{message}")
+                            loop(count - 1)
+                    end
+                end
+            end
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/purple.png">
+    <h2 class="fragment" style="font-size: 2em; color: white; text-shadow: 10px 10px 2px black;">
+        Talk to a process → send
+    </h2>
+    <br>
+
+    <pre class="fragment elixir">
+        <code style="font-size: 60px;" data-trim data-noescape data-line-numbers="|1|2-4|5">
+            pid = spawn(fn -> loop(10) end)
+            send(pid, "A")
+            send(pid, "B")
+            send(pid, "C")
+            send(pid, :stop)
+        </code>
+    </pre>
+</section>
+
+<section data-background-video="images/infinite.mp4" data-background-video-loop>
+</section>
+
+<section data-background-image="images/purple.png">
+    <h2 style="font-size: 2em; color: white; text-shadow: 10px 10px 2px black;">
+        Start 1000 processes !
+    </h2>
+
+    <pre class="fragment elixir">
+        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers="|2-5|6-14|7-13|8-12|8|9|10-11|12">
+            defmodule Clock do
+                def loop(_, 0) do
+                    IO.puts("Stop")
+                end
+
+                def loop(name, count) do
+                    receive do
+                        :tick -> 
+                            IO.puts("#{name}: Tick #{count}")
+                            lag = 500 + :rand.uniform(100)
+                            Process.send_after(self(), :tick, lag)
+                            loop(name, count - 1)
+                    end
+                end
+            end
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/purple.png">
+    <h2 style="font-size: 2em; color: white; text-shadow: 10px 10px 2px black;">
+        Start 1000 processes !
+    </h2>
+
+    <pre class="fragment elixir">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers>
+            for i <- 1..1000 do
+                pid = spawn(fn -> Clock.loop("clock-#{i}", 10) end)
+                Process.send_after(pid, :tick, 1_000)
+                :ok
+            end
+        </code>
+    </pre>
+</section>
+
+<section data-background-video="videos/1000_livebook.mkv" data-background-size="contain" data-background-video-loop>
+</section>
+
+<section data-background-image="images/purple.png">
+    <h2 style="font-size: 2.5em; color: white; text-shadow: 10px 10px 2px black;">
+        GenServer
+    </h2>
+    <h2 style="font-size: 1.5em; color: yellow; text-shadow: 5px 5px 2px black;">(Open Telecom Platform abstraction)</h2>
+    <br \>
+
+    <pre class="fragment elixir">
+        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers>
+            defmodule MyServer do
+              use GenServer
+
+              ...
+            end
+        </code>
+    </pre>
+
+
+    <pre class="fragment elixir">
+        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers>
+            def handle_cast(message, state) do
+              ...  
+              {:noreply, new_state}
+            end
+        </code>
+    </pre>
+
+    <pre class="fragment elixir">
+        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers>
+            def handle_call(message, from, state) do
+              ...  
+              {:reply, response, new_state}
+            end
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/purple.png">
+    <h2 style="font-size: 2.5em; color: white; text-shadow: 10px 10px 2px black;">
+        GenServer
+    </h2>
+    <br \>
+
+    <h2 class="fragment" style="font-size: 1.3em; color: yellow; text-shadow: 5px 5px 2px black;">Sending messages...</h2>
+    <pre class="fragment elixir">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers>
+            GenServer.call(pid, message)
+            GenServer.cast(pid, message)
+        </code>
+    </pre>
+    <br \>
+
+    <h2 class="fragment" style="font-size: 1.3em; color: yellow; text-shadow: 5px 5px 2px black;">...with static and dynamic name registration...</h2>
+    <pre class="fragment elixir">
+        <code style="font-size: 50px;" data-trim data-noescape data-line-numbers>
+            GenServer.call(MyServer, message)
+            GenServer.cast(MyServer, message)
+        </code>
+    </pre>
+
+    <br \>
+    <h2 class="fragment" style="font-size: 1.3em; color: yellow; text-shadow: 5px 5px 2px black;">...accross all nodes with location transparency.</h2>
+</section>
+
+<section data-background-image="images/purple.png">
+    <pre class="elixir">
+        <code style="font-size: 34px;" data-trim data-noescape data-line-numbers="|2|4-6|8-11|13-15">
+            defmodule Cell do
+                use GenServer
+
+                def init(count) do
+                    {:ok, count}
+                end
+            
+                def handle_cast(message, _from, count) do
+                    IO.puts("#{count}: #{message}")
+                    {:noreply, count, count - 1}
+                end
+
+                def handle_cast(:stop, count) do
+                    {:stop, :normal, count}
+                end
+            end          
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/purple.png">
+    <pre class="elixir">
+        <code style="font-size: 30px;" data-trim data-noescape data-line-numbers="|2|4-7|9-12|14-18">
+            defmodule Clock do
+                use GenServer
+
+                def init(count) do
+                    Process.send_after(self(), :tick, 1000)
+                    {:ok, count}
+                end
+            
+                def handle_info(:tick, 0) do
+                    IO.puts("Stop")
+                    {:stop, :normal, 0}
+                end
+            
+                def handle_info(:tick, count) do
+                    IO.puts("Tick #{count}")
+                    Process.send_after(self(), :tick, 500 + :rand.uniform(100))
+                    {:noreply, count - 1}
+                end
+            end
+        </code>
+    </pre>
+</section>
+
+<section data-background-video="images/genserver.mp4" data-background-video-loop></section>
+
+<section data-background-video="images/lot.mp4" data-background-video-loop></section>
+
+<section  data-background-image="images/purple.png">
+    <h1 style="
+    font-size: 4em; 
+    text-align: center; 
+    color: yellow; 
+    text-shadow: 
+    0px -10px 2px black,
+    0px -20px 2px purple,
+    0px -30px 2px pink,
+    0px -40px 5px purple,
+    0px -50px 5px pink,
+    0px -60px 5px purple,
+    0px -70px 5px pink,
+    0px -80px 10px purple,
+    0px -90px 10px pink,
+    0px -100px 15px purple,
+    0px -110px 15px pink,
+    0px -120px 15px purple,
+    0px -130px 15px pink,
+    0px -140px 20px purple,
+    0px -150px 20px pink,
+    0px -160px 20px purple,
+    0px -170px 20px pink,
+    0px -180px 25px purple,
+    0px -190px 25px pink,
+    0px -190px 25px purple,
+    0px -200px 25px pink,
+    0px -210px 25px purple,
+    0px -220px 50px pink,
+    0px -230px 50px purple,
+    0px -240px 50px pink
+    ;">
+        Fail fast, let it crash !
+    </h1>
+
+    <br>
+    <h2 class="fragment" style="text-align: center; font-size: 1.2em; color: yellow; text-shadow: 5px 5px 2px black;">
+        And think about recovery.
+    </h2>
+</section>
+
+<section  data-background-image="images/purple.png">
+    <h2 style="font-size: 2em; color: white; text-shadow: 10px 10px 2px black;">
+        Link two processes → spawn_link
+    </h2>
+
+    <pre class="fragment elixir">
+        <code style="font-size: 35px;" data-trim data-noescape data-line-numbers="1|3-8|7|10-14">
+            current = self()
+
+            spawn_link(fn -> 
+              for i <- 1..5 do
+                send(current, i)
+              end
+              exit(:normal)
+            end)
+            
+            for _ <- 1..5 do
+              receive do
+                msg -> IO.puts(msg)
+              end
+            end
+        </code>
+    </pre>
+
+    <pre class="fragment elixir">
+        <code data-trim data-noescape>
+            1
+            2
+            3
+            4
+            5
+        </code>
+    </pre>
+</section>
+
+<section  data-background-image="images/purple.png">
+    <pre class="fragment elixir">
+        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers="|7">
+            current = self()
+
+            spawn_link(fn -> 
+              for i <- 1..5 do
+                send(current, i)
+              end
+              exit(:noooooo)
+            end)
+            
+            for _ <- 1..5 do
+              receive do
+                msg -> IO.puts(msg)
+              end
+            end
+        </code>
+    </pre>
+
+    <pre class="fragment">
+        <code style="font-size: 40px;" data-trim data-noescape>
+            ** (EXIT from #PID<0.107.0>) shell process 
+               exited with reason: :noooooo 
+        </code>
+    </pre>
+</section>
+
+<section data-background-video="images/link.mp4" data-background-video-loop></section>
+
+
+<section data-background-image="images/purple.png">
+    <h2 style="font-size: 2.5em; color: white; text-shadow: 10px 10px 2px black;">
+        Supervisor
+    </h2>
+    <h2 style="font-size: 1.5em; color: yellow; text-shadow: 5px 5px 2px black;">(Open Telecom Platform abstraction)</h2>
+    <br \>
+</section>
+
+<section  data-background-image="images/purple.png">
+    <pre class="elixir">
+        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers="|2|8-15|4-6">
+            defmodule CellClockSupervisor do
+                use Supervisor
+            
+                def start_link do
+                    Supervisor.start_link(__MODULE__)
+                end
+            
+                def init(_) do
+                    children = [
+                        {Clock, [5_000]},
+                        {Cell, [10_000]}
+                    ]
+                
+                    Supervisor.init(children, [strategy: :one_for_one])
+                end
+            end
+        </code>
+    </pre>
+
+    <pre class="elixir fragment">
+        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers="">
+            CellClockSupervisor.start_link()
+        </code>
+    </pre>
+</section>
+
+<section data-background-image="images/purple.png">
+    <pre class="elixir">
+        <code style="font-size: 30px;" data-trim data-noescape data-line-numbers="|4-6">
+            defmodule Clock do
+                use GenServer
+            
+                def start_link(count) do
+                    GenServer.start_link(__MODULE__, count)
+                end
+            
+                def init(count) do
+                    Process.send_after(self(), :tick, 1000)
+                    {:ok, count}
+                end
+            
+                ...
+            end
+        </code>
+    </pre>
+</section>
+
+<section data-background-video="images/supervisor.mp4" data-background-video-loop></section>
+
+<section data-background-image="images/purple.png">
+    <h2 style="font-size: 2.5em; color: white; text-shadow: 10px 10px 2px black;">
+        Application
+    </h2>
+    <h2 style="font-size: 1.5em; color: yellow; text-shadow: 5px 5px 2px black;">(Open Telecom Platform abstraction)</h2>
+    <br \>
+</section>
+
+<section data-background-video="images/supervisor2.mp4" data-background-video-loop></section>
+
+<section data-background-video="images/services.mp4" data-background-video-loop></section>
+
+
