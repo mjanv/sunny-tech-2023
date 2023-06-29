@@ -223,7 +223,7 @@
 
 <section data-background-image="images/purple.png">
     <pre class="elixir">
-        <code style="font-size: 34px;" data-trim data-noescape data-line-numbers="|2|4-6|8-11|13-15">
+        <code style="font-size: 34px;" data-trim data-noescape data-line-numbers="|2|4-6|8-10|12-15">
             defmodule Cell do
                 use GenServer
 
@@ -231,13 +231,13 @@
                     {:ok, count}
                 end
             
+                def handle_cast(:stop, count) do
+                    {:stop, :normal, count}
+                end
+
                 def handle_cast(message, _from, count) do
                     IO.puts("#{count}: #{message}")
                     {:noreply, count, count - 1}
-                end
-
-                def handle_cast(:stop, count) do
-                    {:stop, :normal, count}
                 end
             end          
         </code>
@@ -372,6 +372,7 @@
 
     <pre class="fragment">
         <code style="font-size: 40px;" data-trim data-noescape>
+            ...
             ** (EXIT from #PID<0.107.0>) shell process 
                exited with reason: :noooooo 
         </code>
@@ -391,13 +392,9 @@
 
 <section  data-background-image="images/purple.png">
     <pre class="elixir">
-        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers="|2|8-15|4-6">
+        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers="|2|5-8|10">
             defmodule CellClockSupervisor do
                 use Supervisor
-            
-                def start_link do
-                    Supervisor.start_link(__MODULE__)
-                end
             
                 def init(_) do
                     children = [
@@ -414,27 +411,6 @@
     <pre class="elixir fragment">
         <code style="font-size: 40px;" data-trim data-noescape data-line-numbers="">
             CellClockSupervisor.start_link()
-        </code>
-    </pre>
-</section>
-
-<section data-background-image="images/purple.png">
-    <pre class="elixir">
-        <code style="font-size: 30px;" data-trim data-noescape data-line-numbers="|4-6">
-            defmodule Clock do
-                use GenServer
-            
-                def start_link(count) do
-                    GenServer.start_link(__MODULE__, count)
-                end
-            
-                def init(count) do
-                    Process.send_after(self(), :tick, 1000)
-                    {:ok, count}
-                end
-            
-                ...
-            end
         </code>
     </pre>
 </section>

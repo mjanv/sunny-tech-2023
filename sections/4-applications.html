@@ -57,23 +57,23 @@
         <code style="font-size: 32px;" data-trim data-noescape data-line-numbers="|2-8|10-12|14-20">
             defmodule Gameoflife.Events do
                 defmodule Tick do
-                    defstruct [:t]
+                  defstruct [:t]
                 end
             
                 defmodule Tock do
-                    defstruct [:t]
+                  defstruct [:t]
                 end
             
                 defmodule Ping do
-                    defstruct [:t]
+                  defstruct [:t]
                 end
             
                 defmodule On do
-                    defstruct [:t, :x, :y]
+                  defstruct [:t, :x, :y]
                 end
             
                 defmodule Off do
-                    defstruct [:t, :x, :y]
+                  defstruct [:t, :x, :y]
                 end
             end
         </code>
@@ -84,7 +84,7 @@
   <h2 style="font-size: 2em; color: white; text-shadow: 5px 5px 2px black;">The Cell</h2>
 
     <pre class="elixir">
-        <code style="font-size: 35px;" data-trim data-noescape data-line-numbers="|2-4|12-22|24-39|41-43|45-62|46-51|53-59|61">
+        <code style="font-size: 35px;" data-trim data-noescape data-line-numbers="|2-4|12-18|20-35|37-39|41-58|42-47|49-55|57">
             defmodule Gameoflife.Cell do
               defstruct [:world, :x, :y, :t, :alive?, :neighbors]
           
@@ -97,11 +97,7 @@
               end
 
               def broadcast(cell, event) do
-                Phoenix.PubSub.broadcast(
-                  Gameoflife.PubSub, 
-                  "world:" <> cell.world.id, 
-                  event
-                )
+                PubSub.broadcast(Gameoflife.PubSub, "world:" <> id,  event)
               end
             
               def cast(id, x, y, message) do
@@ -109,7 +105,7 @@
               end
  
               def handle_cast(
-                %Tick{t: t}, %{x: x, y: y, world: world, alive?: alive?} = state
+                %Tick{t: t}, %{x: x, y: y, world: world, alive?: alive?} = cell
                 ) do
                 if alive? do
                   cast(world.id, x - 1, y - 1, %Ping{t: t})
@@ -122,30 +118,30 @@
                   cast(world.id, x + 1, y + 1, %Ping{t: t})
                 end
             
-                {:noreply, %{state | t: t}}
+                {:noreply, %{cell | t: t}}
               end
 
-              def handle_cast(%Ping{}, state) do            
-                {:noreply, %{state | neighbors: state.neighbors + 1}}
+              def handle_cast(%Ping{}, cell) do            
+                {:noreply, %{cell | neighbors: cell.neighbors + 1}}
               end
           
-              def handle_cast(%Tock{t: t}, state) do
+              def handle_cast(%Tock{t: t}, cell) do
                 alive? =
-                  case {state.alive?, state.neighbors} do
+                  case {cell.alive?, cell.neighbors} do
                     {true, 2} -> true
                     {_, 3} -> true
                     _ -> false
                   end
             
-                case {state.alive?, alive?} do
+                case {cell.alive?, alive?} do
                   {false, true} -> 
-                    broadcast(state, %On{t: state.t, x: state.x, y: state.y})
+                    broadcast(cell.world.id, %On{t: cell.t, x: cell.x, y: cell.y})
                   {true, false} -> 
-                    broadcast(state, %Off{t: state.t, x: state.x, y: state.y})
+                    broadcast(cell.world.id, %Off{t: cell.t, x: cell.x, y: cell.y})
                   _ -> :ok
                 end
             
-                {:noreply, %{state | t: t, neighbors: 0, alive?: alive?}}
+                {:noreply, %{cell | t: t, neighbors: 0, alive?: alive?}}
               end
           end
         </code>
@@ -202,13 +198,11 @@
     <h2 style="font-size: 2em; color: white; text-shadow: 5px 5px 2px black;">A World</h2>
 
     <pre class="elixir">
-        <code style="font-size: 35px;" d data-trim data-noescape data-line-numbers="|2-4|8-10|12-22|15">
+        <code style="font-size: 35px;" d data-trim data-noescape data-line-numbers="|2-4|6-8|10-20|13">
           defmodule Gameoflife.World do
             defstruct [:id, :columns, :rows]
           
             use Supervisor
-          
-            alias Gameoflife.{Cell, Clock, World}
 
             def init(args) do
               Supervisor.init(args[:children], strategy: :one_for_one)
@@ -271,24 +265,24 @@
                     
             def mount(%{"id" => id}, _args, socket) do
               Phoenix.PubSub.subscribe(Gameoflife.PubSub, "world:#{id}")
-              {:ok, assign(socket, id: id, t: 0, grid: %{}, buffer: %{})}
+              {:ok, %{socket | t: 0, grid: %{}, buffer: %{}}}
             end
 
             def handle_info(%On{x: x, y: y}, %{assigns: %{buffer: buffer}} = socket) do
               buffer = Map.put(buffer, {x, y}, :on)
-              {:noreply, assign(socket, t: t, buffer: buffer)}
+              {:noreply, %{socket | t: t, buffer: buffer}}
             end
 
             def handle_info(%Off{x: x, y: y}, %{assigns: %{buffer: buffer}} = socket) do
               buffer = Map.put(buffer, {x, y}, :off)
-              {:noreply, assign(socket, t: t, buffer: buffer)}
+              {:noreply, %{socket | t: t, buffer: buffer}}
             end
 
             def handle_info(%Tock{t: t}, 
                             %{assigns: %{buffer: buffer, grid: grid}} = socket) do
               grid = Map.merge(grid, buffer)
               buffer = %{}
-              {:noreply, assign(socket, t: t, grid: grid, buffer: buffer)}
+              {:noreply, %{socket | t: t, grid: grid, buffer: buffer}}
             end
           end                                
         </code>
@@ -351,7 +345,7 @@
 
 <section data-background-image="images/fond.png">
     <pre class="elixir">
-        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers="|2|5-8|10">
+        <code style="font-size: 40px;" data-trim data-noescape data-line-numbers="|2|5-8">
         defmodule Gameoflife.Application do
             use Application
 
