@@ -218,7 +218,7 @@
     </pre>
 
     <br \>
-    <h2 class="fragment" style="font-size: 1.3em; color: yellow; text-shadow: 5px 5px 2px black;">...accross all nodes with location transparency.</h2>
+    <h2 class="fragment" style="font-size: 1.3em; color: yellow; text-shadow: 5px 5px 2px black;">...accross ALL nodes with location transparency.</h2>
 </section>
 
 <section data-background-image="images/purple.png">
@@ -235,9 +235,9 @@
                     {:stop, :normal, count}
                 end
 
-                def handle_cast(message, _from, count) do
+                def handle_cast(message, count) do
                     IO.puts("#{count}: #{message}")
-                    {:noreply, count, count - 1}
+                    {:noreply, count - 1}
                 end
             end          
         </code>
